@@ -405,10 +405,9 @@ def _open_layer(driver_name, parameters, dirpath):
 
     else:
         layer = datasource.GetLayer(0)
-
-    if layer.GetSpatialRef() is None: 
+        
+    if driver_name == 'PostgreSQL' and layer.GetGeometryColumn() == '':
         raise KnownUnknown('Couldn\'t get a layer from data source %s' % source_name)
-
     #
     # Return the layer and the datasource.
     #
@@ -438,6 +437,8 @@ def _get_features(coord, properties, projection, layer, clipped, projected, spac
     #
     definition = layer.GetLayerDefn()
     layer_sref = layer.GetSpatialRef()
+    if layer_sref is None:
+        layer_sref = _sref_4326()
     
     #
     # Spatially filter the layer
